@@ -221,6 +221,28 @@
             cursor: not-allowed;
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
         @media (max-width: 768px) {
             .chat-area {
                 padding: 20px 15px;
@@ -288,23 +310,6 @@ Ask me anything!</div>
             </div>
         </div>
 
-        <!-- Ad Container -->
-        <div id="adSection" style="background: #f9fafb; padding: 10px 20px; border-top: 1px solid #e5e7eb; display: flex; justify-content: center; align-items: center; position: relative;">
-            <div id="adContainer" style="position: relative; display: inline-block;">
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : '78ade24182729fceea8e45203dad915b',
-                        'format' : 'iframe',
-                        'height' : 50,
-                        'width' : 320,
-                        'params' : {}
-                    };
-                </script>
-                <script type="text/javascript" src="//www.highperformanceformat.com/78ade24182729fceea8e45203dad915b/invoke.js"></script>
-            </div>
-            <button id="closeAdBtn" style="position: absolute; top: 5px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;">×</button>
-        </div>
-
         <div class="input-area">
             <div class="input-container">
                 <input 
@@ -321,6 +326,23 @@ Ask me anything!</div>
                 </button>
             </div>
         </div>
+
+        <!-- Ad Container -->
+        <div id="adSection" style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 12px 20px; border-top: 1px solid #e5e7eb; display: flex; justify-content: center; align-items: center; position: relative; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
+            <div id="adContainer" style="position: relative; display: inline-block;">
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : '78ade24182729fceea8e45203dad915b',
+                        'format' : 'iframe',
+                        'height' : 50,
+                        'width' : 320,
+                        'params' : {}
+                    };
+                </script>
+                <script type="text/javascript" src="//www.highperformanceformat.com/78ade24182729fceea8e45203dad915b/invoke.js"></script>
+            </div>
+            <button id="closeAdBtn" style="position: absolute; top: 8px; right: 12px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);">×</button>
+        </div>
     </div>
 
     <!-- Load Data Files First -->
@@ -333,7 +355,7 @@ Ask me anything!</div>
     <!-- Ad Close Handler -->
     <script>
         (function() {
-            let closeClickCount = 0;
+            let adTimer = null;
             const closeBtn = document.getElementById('closeAdBtn');
             const adSection = document.getElementById('adSection');
             const adContainer = document.getElementById('adContainer');
@@ -346,26 +368,52 @@ Ask me anything!</div>
                 }
             }, 3000);
             
-            closeBtn.addEventListener('click', function() {
-                closeClickCount++;
+            // Hover effects for close button
+            closeBtn.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.15) rotate(90deg)';
+                this.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.5)';
+            });
+            
+            closeBtn.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+                this.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.3)';
+            });
+            
+            // Function to show ad with animation
+            function showAd() {
+                adSection.style.display = 'flex';
+                adSection.style.animation = 'fadeInUp 0.5s ease-out';
+                adSection.style.opacity = '1';
+            }
+            
+            // Function to hide ad
+            function hideAd() {
+                adSection.style.animation = 'fadeOut 0.4s ease-out';
                 
-                if (closeClickCount === 1) {
-                    // First click - just show a visual feedback
-                    this.style.background = '#dc2626';
-                    this.style.transform = 'scale(1.1)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 200);
-                } else if (closeClickCount === 2) {
-                    // Second click - close the ad
-                    adSection.style.transition = 'all 0.3s ease';
+                setTimeout(() => {
                     adSection.style.opacity = '0';
-                    adSection.style.maxHeight = '0';
-                    adSection.style.padding = '0';
-                    setTimeout(() => {
-                        adSection.style.display = 'none';
-                    }, 300);
+                    adSection.style.display = 'none';
+                }, 400);
+                
+                // Clear any existing timer
+                if (adTimer) {
+                    clearTimeout(adTimer);
                 }
+                
+                // Set timer to show ad again after 10 seconds
+                adTimer = setTimeout(() => {
+                    showAd();
+                }, 10000);
+            }
+            
+            // Close button click handler
+            closeBtn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.9) rotate(90deg)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1) rotate(0deg)';
+                }, 200);
+                
+                hideAd();
             });
         })();
     </script>
